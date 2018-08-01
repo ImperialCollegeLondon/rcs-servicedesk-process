@@ -1,0 +1,55 @@
+digraph {
+	label="ENQ processing"
+	start[shape="box", label="New ENQ"];
+	req_access[shape="diamond", label="Requesting\nsystem\naccess\nfor self\nor other?"]; 
+	software_install[shape="diamond", label="Requesting\nsoftware\ninstallation?"];
+	application_support[shape="diamond", label="Reporting an issue\nrunning a job\nor using\na particular\napplication?"];
+  already_tried_ss[shape="diamond", label="Tried\nself-enrollment?"];
+	raise_as_ritm[shape="box", label="Convert to\ngeneric RITM"];
+	convert_to_sr_ritm[shape="box", label="Convert to\nSoftware Installation\nRITM"];
+	convert_to_ae_ritm[shape="box", label="Convert to\nJob Error\nRITM"];
+	raise_as_inc[shape="box", label="Convert to INC"];
+	has_all_information[shape="diamond", label="All required\ninfo supplied?"]
+	collect_info[shape="parallelogram", label="Collect info\nfrom customer"]
+	cant_connect[shape="diamond", label="Can't connect\nto system"]
+	on_ic_network[shape="diamond", label="On college network\n or VPN?"]
+	check_incs[shape="diamond", label="Is there an outstanding\nINC for this service?"]
+	link_to_inc[shape="box", label="Associate ENQ with INC"]
+	vpn_kb[shape="box", label="Refer customer\nto VPN instructions"]
+
+	direct_to_kb[shape="box", label="Refer customer to KB\nfor self-service"];
+	end[shape="box", label="Assign to HPC Support"]
+
+	start -> application_support
+	req_access -> already_tried_ss[label="yes"]
+	already_tried_ss -> raise_as_ritm[label="yes"]
+	already_tried_ss -> direct_to_kb[label="no"]
+
+	application_support -> software_install[label="no"]
+	software_install->convert_to_sr_ritm[label="yes"]
+
+	convert_to_sr_ritm -> has_all_information
+	has_all_information->end[label="yes"]
+	has_all_information->collect_info[label="no"]
+	collect_info->has_all_information
+
+	software_install -> req_access[label="no"]
+	application_support -> convert_to_ae_ritm[label="yes"]
+	convert_to_ae_ritm -> has_all_information
+
+
+	raise_as_ritm -> has_all_information
+	raise_as_inc  -> end	
+
+	req_access->cant_connect[label="no"]
+	cant_connect->on_ic_network[label="yes"]
+	on_ic_network->vpn_kb[label="no"]
+	on_ic_network->check_incs[label="yes"]
+
+
+	check_incs->raise_as_inc[label="no"]
+	check_incs->link_to_inc[label="yes"]
+
+	cant_connect -> raise_as_inc[label="no"]
+
+}
